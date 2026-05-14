@@ -62,28 +62,8 @@ for company in companies:
 for result in results:
     print(result)
 
-
-
 asset = YahooFinance("TTE.PA")
 asset.get_histories(period1, period2, interval="1d")
 trend = TrendHistory(asset)
 isTrends = trend.check_trends()
 trendColors = ["black", "orange", "green"]
-exit()
-isTrends = [trendColors[n] for n in isTrends]
-
-long_average = trend.getMean(200)
-short_average = trend.getMean(50)
-
-plt.figure(figsize=(12, 6))
-plt.scatter(trend.dates, trend.asset_quotes, c=isTrends)
-plt.plot(trend.dates, long_average, marker='.', linestyle='-', color='red')
-plt.plot(trend.dates, short_average, marker='.', linestyle='-', color='blue')
-#plt.plot(dates, very_short_average, marker='.', linestyle='-', color='brown')
-
-plt.title(f"Close Prices")
-plt.xlabel("Date")
-plt.ylabel("Close Price")
-plt.grid(True)
-plt.tight_layout()
-plt.show()

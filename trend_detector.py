@@ -61,9 +61,3 @@ for company in companies:
 # Print after the loop
 for result in results:
     print(result)
-
-asset = YahooFinance("TTE.PA")
-asset.get_histories(period1, period2, interval="1d")
-trend = TrendHistory(asset)
-isTrends = trend.check_trends()
-trendColors = ["black", "orange", "green"]

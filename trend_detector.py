@@ -39,21 +39,28 @@ companies = ["SGO.PA", "RI.PA", "AI.PA", "AC.PA", "TTE.PA", "LR.PA", "BN.PA", "M
 
 #for company in companies:
 
+results = []
+
 for company in companies:
-	asset = YahooFinance(company)
-	asset.get_histories(period1, period2, interval="1d")
-	trend = TrendHistory(asset)
-	isTrends = trend.check_trends()
-	#print(isTrends)
-	isTrends = isTrends[-30:]
-	mean = np.mean(isTrends)
-	if mean > 1:
-		print(asset.info["longName"] + " | " + asset.info["symbol"])
-		print(mean)
-		#print(trend.getlastDividend())
-		#print("Expected days before dividends : " + str(trend.daysSinceLastDividend()) + " / " + str(trend.daysBetweenDividends()))
-		#print("Expected days before dividends : " + str(trend.daysBetweenDividends() - trend.daysSinceLastDividend()))
-		#print("")
+    asset = YahooFinance(company)
+    asset.get_histories(period1, period2, interval="1d")
+
+    trend = TrendHistory(asset)
+    isTrends = trend.check_trends()
+
+    isTrends = isTrends[-30:]
+    mean = np.mean(isTrends)
+
+    if mean > 1:
+        results.append(
+            str(int(100 * mean / 2)) + " % " +
+            asset.info["shortName"] + " | " +
+            asset.info["symbol"]
+        )
+
+# Print after the loop
+for result in results:
+    print(result)
 
 
 

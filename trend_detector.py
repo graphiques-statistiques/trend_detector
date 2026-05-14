@@ -1,0 +1,82 @@
+from finance.YahooFinance import YahooFinance
+from finance.TrendHistory import TrendHistory
+from datetime import datetime
+import matplotlib.pyplot as plt
+import pandas as pd
+import math
+import numpy as np
+
+
+def get_tenth(lst, n):
+    """
+    Returns the nth tenth of a list (1-based index).
+    
+    Parameters:
+    - lst: the list
+    - n: which tenth to return (1 to 10)
+    
+    Returns:
+    - a sublist corresponding to the nth tenth
+    """
+    if not 1 <= n <= 3:
+        raise ValueError("n must be between 1 and 10")
+    
+    length = len(lst)
+    start = (n - 1) * length // 3
+    end = n * length // 3
+    return lst[start:end]
+
+
+period1 = 1726696800-10*31708800
+period2 = 1770222690
+
+# Paris
+# SGO.PA, RI.PA, AI.PA, AC.PA, TTE.PA, LR.PA, BN.PA, ML.PA, AIR.PA, MT.AS, CS.PA, BNP.PA, EN.PA, BVI.PA, SU.PA,
+# CAP.PA, CA.PA, ACA.PA, DSY.PA, FGR.PA, ENGI.PA, EL.PA, ERF.PA, ENX.PA, RMS.PA, KER.PA, MC.PA, ORA.PA, PUB.PA, RNO.PA, SAF.PA, SAN.PA, GLE.PA, STLA, STM, HO.PA, URW.PA, VIE.PA, DG.PA, EDEN.PA
+
+companies = ["SGO.PA", "RI.PA", "AI.PA", "AC.PA", "TTE.PA", "LR.PA", "BN.PA", "ML.PA", "AIR.PA", "MT.AS", "CS.PA", "BNP.PA", "EN.PA", "BVI.PA", "SU.PA",
+"CAP.PA", "CA.PA", "ACA.PA", "DSY.PA", "FGR.PA", "ENGI.PA", "EL.PA", "ERF.PA", "ENX.PA", "RMS.PA", "KER.PA", "MC.PA", "ORA.PA", "PUB.PA", "RNO.PA", "SAF.PA", "SAN.PA", "GLE.PA", "STLA", "STM", "HO.PA", "URW.PA", "VIE.PA", "DG.PA", "EDEN.PA"]
+
+#for company in companies:
+
+for company in companies:
+	asset = YahooFinance(company)
+	asset.get_histories(period1, period2, interval="1d")
+	trend = TrendHistory(asset)
+	isTrends = trend.check_trends()
+	#print(isTrends)
+	isTrends = isTrends[-30:]
+	mean = np.mean(isTrends)
+	if mean > 1:
+		print(asset.info["longName"] + " | " + asset.info["symbol"])
+		print(mean)
+		#print(trend.getlastDividend())
+		#print("Expected days before dividends : " + str(trend.daysSinceLastDividend()) + " / " + str(trend.daysBetweenDividends()))
+		#print("Expected days before dividends : " + str(trend.daysBetweenDividends() - trend.daysSinceLastDividend()))
+		#print("")
+
+
+
+asset = YahooFinance("TTE.PA")
+asset.get_histories(period1, period2, interval="1d")
+trend = TrendHistory(asset)
+isTrends = trend.check_trends()
+trendColors = ["black", "orange", "green"]
+exit()
+isTrends = [trendColors[n] for n in isTrends]
+
+long_average = trend.getMean(200)
+short_average = trend.getMean(50)
+
+plt.figure(figsize=(12, 6))
+plt.scatter(trend.dates, trend.asset_quotes, c=isTrends)
+plt.plot(trend.dates, long_average, marker='.', linestyle='-', color='red')
+plt.plot(trend.dates, short_average, marker='.', linestyle='-', color='blue')
+#plt.plot(dates, very_short_average, marker='.', linestyle='-', color='brown')
+
+plt.title(f"Close Prices")
+plt.xlabel("Date")
+plt.ylabel("Close Price")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
